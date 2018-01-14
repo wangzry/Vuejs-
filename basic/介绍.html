@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>vuejs-介绍</title>
+    <style></style>
+    <!-- <script src="https://unpkg.com/vue"></script> -->
+    <script src="../build/vue.js"></script>
+  </head>
+  <body>
+    <!-- 文本插值，数据绑定到文本 -->
+    <div id="app-1">
+      <span>{{ message }}</span>
+    </div>
+    <!-- 指令：将此元素的title属性与Vue实例的message属性保持关联更新,
+      指令前缀v-表示由Vue提供的专用属性，eg:v-bind即绑定属性，
+      数据绑定到属性 -->
+    <div id="app-2">
+      <span v-bind:title = "message">
+        鼠标悬停在此几秒
+        可以看到此处动态绑定的tittle
+      </span>
+    </div>
+    <!-- 数据绑定到DOM结构 -->
+    <!-- 条件if -->
+    <div id="app-3">
+      <span v-if="seen">现在你可以看到我</span>
+    </div>
+    <!-- 循环for -->
+    <div id="app-4">
+      <ol>
+        <li v-for="todo in todos">
+          {{todo.text}}
+        </li>
+      </ol>
+    </div>
+    <!-- 用户和应用程序交互 -->
+    <!-- 事件监听器，监听click事件 -->
+    <div id="app-5">
+      <p>{{message}}</p>
+      <button v-on:click="reverseMessage">翻转 message</button>
+    </div>
+    <!-- 表单输入v-model -->
+    <!-- 表单输入和应用程序之间的双向绑定，何为双向绑定？
+      用户通过表单输入改变应用程序的状态，也可通过改变应用程序的状态来改变表单输入
+      不知道这个理解对不对 -->
+    <div id="app-6">
+      <p>{{ message }}</p>
+      <input v-model="message">
+    </div>
+    <!-- 组件系统 -->
+    <div id='app-7'>
+      <ol>
+        <todo-item
+          v-for="item in groceryList"
+          v-bind:todo="item"
+          v-bind:key="item.id"
+        ></todo-item>
+      </ol>
+    </div>
+    <!-- 组件模板,Vue组件非常类似Web组件规范中的自定义元素，因为效仿参照了此规范 -->
+    <div id=app>
+      <app-nav>1</app-nav>     
+      <app-view>
+        <app-sidebar>2</app-sidebar>
+        <app-content>3</app-content>
+      </app-view>
+    </div>
+    <script type="text/javascript">
+      var app = new Vue({ //Vue实例
+        el: '#app-1', //绑定DOM元素
+        data: { //数据绑定
+          message: 'Hello Vue!'
+        }
+      })
+      var app2 = new Vue({
+        el: '#app-2',
+        data: {
+          message: '页面加载于'+ new Date().toLocaleString()
+        }
+      })
+      var app3 = new Vue({
+        el: '#app-3',
+        data: {
+          seen: true
+        }
+      })
+      var app4 = new Vue({
+        el: '#app-4',
+        data: {
+          todos: [
+            { text: "你好"} ,
+            { text: "我叫王鹏飞" },
+            { text: "你叫什么啊" }
+          ]
+        }
+      })
+      var app5 = new Vue({
+        el: '#app-5',
+        data: {
+          message: 'Do you love me ？'
+        },
+        methods: {
+          reverseMessage: function () {
+            this.message = this.message.split('').reverse().join('')//翻转
+          }
+        }
+      })
+      var app6 = new Vue({
+        el: '#app-6',
+        data: {
+          message: "我喜欢你"
+        }
+      })
+      Vue.component('todo-item', {
+        props: ['todo'],
+        template: '<li>{{todo.text}}</li>'
+      })//为什么component要定义在app-7之前才可以呢？
+      //因为如果不先声明组件，在Vue实例绑定时，渲染DOM树时没有数据绑定
+      var app7 = new Vue({
+        el: '#app-7',
+        data: {
+          groceryList: [
+            { id: 0, text: '射手' },
+            { id: 1, text: '法师' },
+            { id: 2, text: '坦克' }
+          ]
+        }
+      })
+      
+    </script>
+  </body>
+</html>
