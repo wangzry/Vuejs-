@@ -6,6 +6,97 @@
     <script src="../build/vue.js"></script>
 </head>
 <body>
-    <div id='app'>Hello Vuejs</div>
+    <div id='example'>{{a}}</div>
+    <div id='app'>
+        <p>{{obj.foo}}</p>
+        <!-- 这里点击将不会更新obj.foo，还有这里@是什么鬼，替代v-on？是的，缩写 -->
+        <button @click = "obj.foo = 'baz'">点我修改</button>
+    </div>
+    <script>
+        //Vue的一个实例
+        // var vm = new Vue({//vm-ViewModel的简称
+        //     //选项
+        // })
+        //所有Vue组件，都是Vue实例
+        //Vue应用程序包括：一个使用new Vue创建的Vue根实例、嵌套的树结构（可选）、可复用的组件
+        // Root instance 根实例、嵌套树结构
+        //     TodoList 可复用组件
+        //         TodoItem
+        //             DeleteTodoButton
+        //             EditTodoButton
+        //         TodoListFooter
+        //             clearTodosButton
+        //             TodoListStatistics
+        //Vue实例
+        var data = { a: 1 }
+        var vm = new Vue({
+            el: '#example',//vm.$el === document.getElementById('example')
+            data: data//vm.$data === data
+        })
+        //数据绑定之后vm和data引用了同一个对象
+        //实例创建之后，可以通过vm.$data访问原始数据对象，
+        console.log(vm.$data.a === data.a);
+        //又因为Vue实例也代理了data对象上的所有属性，
+        //所以访问vm.a等价于访问vm.$data.a，也就是data.a
+        console.log(vm.a === data.a); //注意这里是vm.a，而不是vm.data.a，为什么？
+        //响应式系统，data对象属性的值发生变化时，视图都会及时响应，应更新相应的值    
+        vm.a = 2;
+        console.log(data.a);
+        //反之亦然
+        data.a = 3;
+        console.log(vm.a);
+        //但是仅限于实例创建时，data中原本已经有的属性，才是响应式的;
+        //如果在实例创建之后，添加的一个新属性，修改它则不会触发任何的视图更新。
+        vm.b = 4;
+        data.b = 5;
+        //所以，如果你提前知道，之后会用到一个开始是空的或者不存在的属性
+        //你需要预先设置一些初始值
+        var data2 = {
+            newTodoText: '',//string
+            visitCount: 0,//number
+            hideCompletedTodos: false,//boolean
+            todos: [],//array
+            //newTodoItems: {},//object为什么官网例子里没有？            
+            error: null//null
+            //undefined类型没必要
+        }
+        //唯一的例外，可以使用Object.freeze()来防止已有的属性被修改，
+        //这也意味着响应式系统无法追踪该属性的变化，从而更新视图
+        var obj = {
+            foo: 'bar'
+        }
+        Object.freeze(obj);//Object.freeze()创建一个冻结对象，值不可修改
+        var app = new Vue({
+            el: '#app',
+            data () {
+                return {
+                    obj
+                }
+            },//这里是什么写法？
+            // data: function () {
+            //     return {
+            //         obj
+            //     }
+            // }
+            //其实就是这种写法
+            //data: { obj } //此处不能写obj，因为Vue代理了obj，就不存在obj.foo，让Vue代理{obj}
+            methods: {
+                //方法
+            },
+            created: function () {
+                console.log('obj.foo is: ' + this.obj.foo)
+            }//钩子中不要使用箭头函数，涉及到this指向性
+        })
+        app.$watch('obj.foo', function (newValue, oldValue) {
+            console.log('new: %s, old: %s', newValue, oldValue)
+        });
+        // Vue实例是有生命周期的
+        // Vue实例创建的初始化过程：
+        // 设置数据观察
+        // 编译模板
+        // 在DOM挂载实例
+        // 在数据变化时更新DOM
+        // 涉及到一些生命周期钩子函数，见生命周期示意图
+    </script>
 </body>
 </html>
